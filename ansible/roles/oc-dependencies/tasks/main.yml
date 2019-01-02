@@ -39,7 +39,7 @@
 - name: set docker storage drive to devicemapper
   lineinfile:
     path: /etc/sysconfig/docker-storage
-    regex: DOCKER_STORAGE_OPTIONS=
+    regexp: DOCKER_STORAGE_OPTIONS=
     line: DOCKER_STORAGE_OPTIONS="--storage-driver devicemapper"
     insertafter: EOF
 
