@@ -1,0 +1,8 @@
+_depricated
+untracked-files
+**.retry
+**roles
+.vagrant
+**/.*.swp
+_selinux_has_been_disabled
+**ansible.log

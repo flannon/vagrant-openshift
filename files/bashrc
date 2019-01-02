@@ -1,0 +1,16 @@
+# .bashrc
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+        . /etc/bashrc
+fi
+
+# User specific aliases and functions
+
+alias c=clear
+alias lo=exit
+alias ls="ls -F"
+alias rm="rm -i"
+alias vi="vim"
+
+set -o vi

@@ -1,0 +1,34 @@
+---
+localhost:
+  hosts:
+    localhost
+  vars:
+    ansible_connection: local
+
+control:
+  hosts:
+    control.lab.example.com
+
+master:
+  hosts:
+    master.lab.example.com
+
+appnode0:
+  hosts:
+    appnode1.lab.example.com
+    
+appnode1:
+  hosts:
+    appnode1.lab.example.com
+
+appnode2:
+  hosts:
+    appnode2.lab.example.com
+
+appnode3:
+  hosts:
+    appnode3.lab.example.com
+    
+appnode4:
+  hosts:
+    appnode4.lab.example.com

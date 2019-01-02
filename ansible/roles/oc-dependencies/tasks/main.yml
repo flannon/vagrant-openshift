@@ -1,0 +1,53 @@
+---
+- name: "install packages"
+  yum:
+    name: "{{packages}}"
+    #state: latest
+  vars:
+    packages:
+      - docker
+      - NetworkManager
+      - wget
+      - git
+      - net-tools
+      - bind-utils
+      - yum-utils
+      - iptables-services
+      - bridge-utils
+      - bash-completion
+      - kexec-tools
+      - sos
+      - psacct
+
+- name: uninstall ansible
+  yum:
+    name: ansible
+    state: absent
+
+- name: install ansible 2.6.9
+  yum:
+    name: https://releases.ansible.com/ansible/rpm/release/epel-7-x86_64/ansible-2.6.9-1.el7.ans.noarch.rpm
+    state: present
+
+
+- name: enable NetworkManager
+  systemd:
+    name: NetworkManager
+    enabled: yes
+    state: started
+
+- name: set docker storage drive to devicemapper
+  lineinfile:
+    path: /etc/sysconfig/docker-storage
+    regex: DOCKER_STORAGE_OPTIONS=
+    line: DOCKER_STORAGE_OPTIONS="--storage-driver devicemapper"
+    insertafter: EOF
+
+- name: docker-storage-setup
+  command: docker-storage-setup
+
+- name: start docker service
+  systemd:
+    name: docker
+    enabled: yes
+    state: started
