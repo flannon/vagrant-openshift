@@ -11,8 +11,6 @@
     firewall_enabled_at_boot: true
     firewall_allowed_tcp_ports:
       - "22"
-      - "53"
-      - "80"
       - "443"
       - "2049"
       - "2379"
@@ -21,7 +19,6 @@
       - "8053"
       - "8443"
       - "8444"
-      - "9000"
       - "10010"
       - "10250"
     firewall_additional_rules:

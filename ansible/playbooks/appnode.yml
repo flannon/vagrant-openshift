@@ -4,6 +4,7 @@
   gather_facts: true
   remote_user: vagrant
 
+  # oc ports terraform-aws-modules/security-group/aws//modules/http-80
   vars:
     ntp_manage_config: true
     ntp_timezone: America/New_York
@@ -11,19 +12,9 @@
     firewall_enabled_at_boot: true
     firewall_allowed_tcp_ports:
       - "22"
-      - "53"
-      - "80"
-      - "443"
-      - "2049"
-      - "2379"
-      - "2380"
       - "4789"
-      - "8053"
-      - "8443"
-      - "8444"
-      - "9000"
-      - "10010"
       - "10250"
+      - "10010"
     firewall_additional_rules:
       - "iptables -A INPUT -p icmp -m comment --comment '000 accept all icmp' -j ACCEPT"
       - "iptables -A INPUT -i lo -m comment --comment '001 accept all to lo interface' -j ACCEPT"
