@@ -92,7 +92,7 @@ config.vm.define "control" do |control|
       destination: "~vagrant/ansible.cfg"
 
     control.vm.provision "file",
-      source: "#{VAGRANTROOT}/ansible/inventory",
+      source: "#{VAGRANTROOT}/ansible/OSEv3.yml",
       destination: "~vagrant/inventory"
 
     control.vm.provision "file",
