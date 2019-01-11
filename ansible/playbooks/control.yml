@@ -41,7 +41,8 @@
       git:
         repo: "https://github.com/openshift/openshift-ansible"
         dest: "~vagrant/openshift-ansible"
-        version: "master"
+        #version: "master"
+        version: "openshift-ansible-3.9.59-1"
 
   roles:
     - housekeeping
