@@ -13,22 +13,22 @@ master:
   hosts:
     master.lab.example.com
 
-appnode0:
+node0:
   hosts:
-    appnode1.lab.example.com
+    node1.lab.example.com
     
-appnode1:
+node1:
   hosts:
-    appnode1.lab.example.com
+    node1.lab.example.com
 
-appnode2:
+node2:
   hosts:
-    appnode2.lab.example.com
+    node2.lab.example.com
 
-appnode3:
+node3:
   hosts:
-    appnode3.lab.example.com
+    node3.lab.example.com
     
-appnode4:
+node4:
   hosts:
-    appnode4.lab.example.com
+    node4.lab.example.com

@@ -11,19 +11,19 @@
     firewall_enabled_at_boot: true
     firewall_allowed_tcp_ports:
       - "22"
-      - "53"
+        #- "53"
       - "80"
       - "443"
-      - "2049"
-      - "2379"
-      - "2380"
-      - "4789"
-      - "8053"
-      - "8443"
-      - "8444"
-      - "9000"
-      - "10010"
-      - "10250"
+        #- "2049"
+        #- "2379"
+        #- "2380"
+        #- "4789"
+        #- "8053"
+        #- "8443"
+        # - "8444"
+        #- "9000"
+        #- "10010"
+        #- "10250"
 
     firewall_additional_rules:
       - "iptables -A INPUT -p icmp -m comment --comment '000 accept all icmp' -j ACCEPT"
@@ -47,4 +47,5 @@
     - housekeeping
     - firewall
     - ntp
+    - oc-dependencies
     # - logrotate
