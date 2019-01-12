@@ -1,6 +1,5 @@
 # vagrant-ansible-templates
-Templates for building vagrant boxes for 
-
+Vagrant cofiguration for building an openshift cluster
 
 ## Table of Contents
 
@@ -11,10 +10,6 @@ Templates for building vagrant boxes for
 
 #### Overview
 
-Provides templates for building the follwoing vagrant boxes
-
-    - Centos 7 (templates)
-    - awx
 
 #### Pre-Installaiton Setup
 
@@ -27,21 +22,9 @@ To run the vagrant installer you will need Virtualbox and vagrant vagrant runnin
 
 #### Usage
 
-Clone vagrant templates, checkout the branch you want to build and
-then vagrant up. i.e. To build vagrant-awx do the following,
+    ansible -m ping -i ./inventory masters
+    cd openshift-ansible
+    ansible-playbook -i ../inventory playbooks/prerequisites.yml
+    openshift-ansible]$ ansible-playbook -i ../inventory playbooks/deploy_cluster.yml
 
-    $ git clone https://gitlab.com/flannon/vagrant-ansible-templates \
-      vagrant-awx
-    $ cd vagrant-awx
-    $ git checkout awx
-    $ vagrant up
-
-
-To connect to your vagrant box you can,
-
-    $ vagrant ssh
-
-Or, to connect directly from a local shell to the bagrant box,
-
-    $ ssh vagrant@172.25.250.254 -i ~/.vagrant.d/insecure_private_key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o PasswordAuthentication=no -o IdentitiesOnly=yes
-
+sudo chmod 777 /etc/ansible/facts.d/
