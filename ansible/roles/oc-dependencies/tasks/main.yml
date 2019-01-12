@@ -51,3 +51,10 @@
     name: docker
     enabled: yes
     state: started
+
+- name: make facts.d 
+  file: 
+    path: /etc/ansible/facts.d
+    state: directory
+    mode: 0777
+
