@@ -45,7 +45,7 @@ config.vm.define "control" do |control|
       vb.linked_clone = true if Vagrant::VERSION =~ /^1.8/
     end
 
-    control.vm.hostname = "control.local"
+    control.vm.hostname = "control.lab.example.com"
     control.vm.provision :shell, inline: "yum -y install ansible"
     control.vm.provision "file",
       source: "~/.gitconfig",
@@ -146,7 +146,7 @@ config.vm.define "master" do |master|
       vb.linked_clone = true if Vagrant::VERSION =~ /^1.8/
     end
 
-    master.vm.hostname = "master.local"
+    master.vm.hostname = "master.lab.example.com"
     #master.vm.provision :shell, inline: "yum -y install ansible"
     master.vm.provision :shell, inline: "yum -y install https://releases.ansible.com/ansible/rpm/release/epel-7-x86_64/ansible-2.6.9-1.el7.ans.noarch.rpm"
     master.vm.provision "file",
@@ -218,7 +218,7 @@ config.vm.define "node1" do |node1|
       vb.linked_clone = true if Vagrant::VERSION =~ /^1.8/
     end
 
-    node1.vm.hostname = "node1.local"
+    node1.vm.hostname = "node1.lab.example.com"
     node1.vm.provision :shell, inline: "yum -y install ansible"
     node1.vm.provision "file",
       source: "~/.gitconfig",
@@ -309,7 +309,7 @@ config.vm.define "node2" do |node2|
       vb.linked_clone = true if Vagrant::VERSION =~ /^1.8/
     end
 
-    node2.vm.hostname = "node2.local"
+    node2.vm.hostname = "node2.lab.example.com"
     node2.vm.provision :shell, inline: "yum -y install ansible"
     node2.vm.provision "file",
       source: "~/.gitconfig",
