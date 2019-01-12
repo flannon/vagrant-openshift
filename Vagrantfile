@@ -124,7 +124,7 @@ config.vm.define "master" do |master|
   #$ANSIBLEROLE = "master"
   $IPADDR = "172.99.36.6"
   $CPUS = "2"
-  $MEMORY = "2048"
+  $MEMORY = "6144"
   $MULTIVOL = false
   $MOUNTPOINT = "/mnt"
 
@@ -196,7 +196,7 @@ config.vm.define "node1" do |node1|
 
   $IPADDR = "172.99.36.7"
   $CPUS = "2"
-  $MEMORY = "2048"
+  $MEMORY = "4096"
   $MULTIVOL = false
   $MOUNTPOINT = "/mnt"
 
@@ -287,7 +287,7 @@ config.vm.define "node2" do |node2|
 
   $IPADDR = "172.99.36.8"
   $CPUS = "2"
-  $MEMORY = "2048"
+  $MEMORY = "4096"
   $MULTIVOL = false
   $MOUNTPOINT = "/mnt"
 
