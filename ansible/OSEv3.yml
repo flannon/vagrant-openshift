@@ -15,13 +15,17 @@ ansible_become=true
 #openshift_disable_check=memory_availability,disk_availability,docker_storage,docker_image_availability
 
 # If ansible_ssh_user is not root, ansible_become must be set to true
-#ansible_become=true
 #ansible_become_user=vagrant
 
 openshift_deployment_type=origin
 openshift_repos_enable_testing=true
 openshift_release=v3.9.0
+openshift_disable_check=docker_storage,memory_availability,docker_image_availability
+containerized=true
 
+#openshift_master_default_subdomain=lab.example.com
+#openshift_docker_insecure_registries=172.30.0.0/16
+#
 ## uncomment the following to enable htpasswd authentication; defaults to AllowAllPasswordIdentityProvider
 ##openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider'}]
 #
@@ -29,7 +33,7 @@ openshift_release=v3.9.0
 ## host group for masters
 
 [masters]
-master.lab.example.com
+master.lab.example.com openshift_schedulable=true containerized=false
 #172.99.36.6 
 
 # host group for etcd
@@ -39,10 +43,13 @@ master.lab.example.com
 
 # host group for nodes, includes region info
 [nodes]
+#master.lab.example.com
 node1.lab.example.com openshift_node_group_name='node-config-compute'
 node2.lab.example.com openshift_node_group_name='node-config-compute'
 #infra-node1.lab.example.com openshift_node_group_name='node-config-infra'
 master.lab.example.com openshift_node_group_name='node-config-infra'
 #infra-node2.lab.example.com openshift_node_group_name='node-config-infra'
-master.lab.example.com openshift_node_group_name='node-config-infra'
+#master.lab.example.com openshift_node_group_name='node-config-infra'
+
+##openshift_schedulable=true
 
