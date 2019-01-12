@@ -10,12 +10,17 @@ etcd
 [OSEv3:vars]
 # SSH user, this user should allow ssh based auth without requiring a password
 ansible_ssh_user=vagrant
+ansible_become=true
+#ansible_ssh_user=root
+#openshift_disable_check=memory_availability,disk_availability,docker_storage,docker_image_availability
 
 # If ansible_ssh_user is not root, ansible_become must be set to true
 #ansible_become=true
 #ansible_become_user=vagrant
 
 openshift_deployment_type=origin
+openshift_repos_enable_testing=true
+openshift_release=v3.9.0
 
 ## uncomment the following to enable htpasswd authentication; defaults to AllowAllPasswordIdentityProvider
 ##openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider'}]
