@@ -13,10 +13,6 @@ master:
   hosts:
     master.lab.example.com
 
-node0:
-  hosts:
-    node1.lab.example.com
-    
 node1:
   hosts:
     node1.lab.example.com
@@ -25,10 +21,3 @@ node2:
   hosts:
     node2.lab.example.com
 
-node3:
-  hosts:
-    node3.lab.example.com
-    
-node4:
-  hosts:
-    node4.lab.example.com
