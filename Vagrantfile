@@ -122,7 +122,7 @@ config.vm.define "master" do |master|
   #$HOSTNAME = "master"
   #$ANSIBLEROLE = $HOSTNAME
   #$ANSIBLEROLE = "master"
-  $IPADDR = "172.99.36.6"
+  $IPADDR = "172.99.36.5"
   $CPUS = "2"
   $MEMORY = "6144"
   $MULTIVOL = false
@@ -155,14 +155,6 @@ config.vm.define "master" do |master|
 
     master.vm.provision :shell, inline: "yum -y update"
 
-    ## Disable selinux and reboot
-    #unless FileTest.exist?("./untracked-files/first_boot_complete")
-    #  master.vm.provision :shell, inline: "sed -i s/^SELINUX=enforcing/SELINUX=permissive/ /etc/selinux/config"
-    #  master.vm.provision :reload
-    #  require 'fileutils'
-    #  FileUtils.touch("#{VAGRANTROOT}/untracked-files/first_boot_complete")
-    #end
-
     # Install git and wget
     master.vm.provision :shell, inline: "yum -y install git wget"
     # Load bashrc
@@ -191,6 +183,73 @@ config.vm.define "master" do |master|
       ansible.playbook = "#{VAGRANTROOT}/ansible/playbooks/master.yml"
     end
   end #!- master
+
+config.vm.define "infra1" do |infra1|
+
+  #$HOSTNAME = "master"
+  #$ANSIBLEROLE = $HOSTNAME
+  #$ANSIBLEROLE = "master"
+  $IPADDR = "172.99.36.6"
+  $CPUS = "2"
+  $MEMORY = "2048"
+  $MULTIVOL = false
+  $MOUNTPOINT = "/mnt"
+
+    infra1.vm.box = "centos/7"
+    config.ssh.insert_key = false
+    infra1.vm.network :private_network, ip: $IPADDR,
+      virtualbox__hostonly: true
+    #infra1.vm.network :forwarded_port, guest: 80, host: 6080,
+    #  virtualbox__hostonly: true
+
+    infra1.vm.provider :virtualbox do |vb|
+      vb.name = "infra-node1"
+      vb.memory = $MEMORY
+      vb.cpus = $CPUS
+      if $CPUS != "1"
+        vb.customize ["modifyvm", :id, "--ioapic", "on"]
+      end
+      vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+      vb.linked_clone = true if Vagrant::VERSION =~ /^1.8/
+    end
+
+    infra1.vm.hostname = "infra-node1.lab.example.com"
+    #master.vm.provision :shell, inline: "yum -y install ansible"
+    infra1.vm.provision :shell, inline: "yum -y install https://releases.ansible.com/ansible/rpm/release/epel-7-x86_64/ansible-2.6.9-1.el7.ans.noarch.rpm"
+    infra1.vm.provision "file",
+      source: "~/.gitconfig",
+      destination: ".gitconfig"
+
+    infra1.vm.provision :shell, inline: "yum -y update"
+
+    # Install git and wget
+    infra1.vm.provision :shell, inline: "yum -y install git wget"
+    # Load bashrc
+    infra1.vm.provision "file", source: "#{VAGRANTROOT}/files/bashrc",
+      destination: "${HOME}/.bashrc"
+    infra1.vm.provision "file", source: "#{VAGRANTROOT}/files/bashrc",
+      destination: "/home/vagrant/.bashrc"
+
+    # Load ssh keys
+    infra1.vm.provision "file", source: "#{VAGRANTROOT}/files/vagrant",
+      destination: "/home/vagrant/.ssh/id_rsa"
+    infra1.vm.provision :shell, inline: "chmod 600 /home/vagrant/.ssh/id_rsa"
+    infra1.vm.provision :file, source: "#{VAGRANTROOT}/files/vagrant.pub",
+      destination: "/home/vagrant/.ssh/id_rsa.pub"
+
+    # Load /etc/hosts
+    infra1.vm.provision "shell", path: "./bin/hosts.sh", privileged: true
+
+    # Run ansible provisioning
+    infra1.vm.provision :ansible do |ansible|
+      ansible.verbose = "v"
+      ansible.config_file = "#{VAGRANTROOT}/ansible/ansible.cfg"
+      ansible.galaxy_roles_path  = "#{VAGRANTROOT}/ansible/roles"
+      ansible.galaxy_role_file = "#{VAGRANTROOT}/ansible/requirements.yml"
+      ansible.galaxy_command = "ansible-galaxy install --role-file=./ansible/requirements.yml --roles-path=./ansible/roles --force"
+      ansible.playbook = "#{VAGRANTROOT}/ansible/playbooks/master.yml"
+    end
+  end #!- infra1
 
 config.vm.define "node1" do |node1|
 
