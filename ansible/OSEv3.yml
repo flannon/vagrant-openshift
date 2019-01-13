@@ -21,7 +21,7 @@ openshift_deployment_type=origin
 openshift_repos_enable_testing=true
 openshift_release=v3.9.0
 openshift_disable_check=docker_storage,memory_availability,docker_image_availability
-containerized=true
+#containerized=true
 
 #openshift_master_default_subdomain=lab.example.com
 #openshift_docker_insecure_registries=172.30.0.0/16
@@ -31,25 +31,19 @@ containerized=true
 #
 
 ## host group for masters
-
 [masters]
 master.lab.example.com openshift_schedulable=true containerized=false
-#172.99.36.6 
 
 # host group for etcd
 [etcd]
 master.lab.example.com
-#172.99.36.6 
 
 # host group for nodes, includes region info
 [nodes]
-#master.lab.example.com
+master.lab.example.com openshift_node_group_name='node-config-master'
 node1.lab.example.com openshift_node_group_name='node-config-compute'
 node2.lab.example.com openshift_node_group_name='node-config-compute'
-#infra-node1.lab.example.com openshift_node_group_name='node-config-infra'
-master.lab.example.com openshift_node_group_name='node-config-infra'
-#infra-node2.lab.example.com openshift_node_group_name='node-config-infra'
-#master.lab.example.com openshift_node_group_name='node-config-infra'
+infra-node1.lab.example.com openshift_node_group_name='node-config-infra'
 
 ##openshift_schedulable=true
 
