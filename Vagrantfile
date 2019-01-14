@@ -27,12 +27,12 @@ config.vm.define "control" do |control|
     config.ssh.insert_key = false
     control.vm.network :private_network, ip: IPADDR,
       virtualbox__hostonly: true
-    control.vm.network :forwarded_port, guest: 80, host: 10080,
-      virtualbox__hostonly: true
-    control.vm.network :forwarded_port, guest: 443, host: 10443,
-      virtualbox__hostonly: true
-    control.vm.network :forwarded_port, guest: 8052, host: 10052,
-      virtualbox__hostonly: true
+    ##control.vm.network :forwarded_port, guest: 80, host: 10080,
+    #  virtualbox__hostonly: true
+    #control.vm.network :forwarded_port, guest: 443, host: 10443,
+    #  virtualbox__hostonly: true
+    #control.vm.network :forwarded_port, guest: 8052, host: 10052,
+    #  virtualbox__hostonly: true
 
     control.vm.provider :virtualbox do |vb|
       vb.name = "control"
@@ -50,16 +50,7 @@ config.vm.define "control" do |control|
     control.vm.provision "file",
       source: "~/.gitconfig",
       destination: ".gitconfig"
-
-    # Disable selinux and reboot
-    #unless FileTest.exist?("./untracked-files/first_boot_complete_control")
-      control.vm.provision :shell, inline: "yum -y update"
-      control.vm.provision :shell, inline: "sed -i s/^SELINUX=enforcing/SELINUX=permissive/ /etc/selinux/config"
-      #control.vm.provision :reload
-      #control.vm.synced_folder ".", "/vagrant"
-      #require 'fileutils'
-      #FileUtils.touch("#{VAGRANTROOT}/untracked-files/first_boot_complete_control")
-    #end
+    control.vm.provision :shell, inline: "yum -y update"
 
     # Install git and wget
     control.vm.provision :shell, inline: "yum -y install git wget"
@@ -77,14 +68,10 @@ config.vm.define "control" do |control|
       destination: "/home/vagrant/.ssh/id_rsa.pub"
 
     # Load /etc/hosts
-    control.vm.provision "shell", path: "./bin/hosts.sh", privileged: true
-
-    # Set ansible roles environment variable
-    # This is unused and may be set wrong, i.e. as currently
-    # configured it addresses the host context but it probably should
-    # be the guest context, like the following
-    #  ENV['ANSIBLE_ROLES_PATH'] = "#{VAGRANTROOT}/ansible/roles"
-    #ENV['ANSIBLE_ROLES_PATH'] = "~vagrant/ansible/roles"
+    #control.vm.provision "shell", path: "./bin/hosts.sh", privileged: true
+    control.vm.provision "file", source: "#{VAGRANTROOT}/files/hosts",
+      destination: "/tmp/hosts"
+    control.vm.provision :shell, inline: "mv -f /tmp/hosts /etc/hosts"
 
     # Load ansible config to ~vagrant on the guest
     control.vm.provision "file",
@@ -95,16 +82,19 @@ config.vm.define "control" do |control|
       source: "#{VAGRANTROOT}/ansible/OSEv3.yml",
       destination: "~vagrant/inventory"
 
-    control.vm.provision "file",
-      source: "#{VAGRANTROOT}/ansible/requirements.yml",
-      destination: "~vagrant/requirements.yml"
+    #control.vm.provision "file",
+    #  source: "#{VAGRANTROOT}/ansible/requirements.yml",
+    #  destination: "~vagrant/requirements.yml"
 
-    control.vm.provision "shell", inline: "[[ -d ~vagrant/playbooks ]] || \
-      mkdir ~vagrant/playbooks/ && chown vagrant: ~vagrant/playbooks"
+    #control.vm.provision "shell", inline: "[[ -d ~vagrant/playbooks ]] || \
+    #  mkdir ~vagrant/playbooks/ && chown vagrant: ~vagrant/playbooks"
 
-    control.vm.provision "file",
-      source: "#{VAGRANTROOT}/ansible/playbooks/control.yml",
-      destination: "~vagrant/playbooks/control.yml"
+    ##control.vm.provision "shell", inline: "[[ -d ~vagrant/ansible/facts ]] || \
+    ##  mkdir -m  -p ~vagrant/ansible/facts/ && chown vagrant: ~vagrant/ansible/facts"
+
+    #control.vm.provision "file",
+    #  source: "#{VAGRANTROOT}/ansible/playbooks/control.yml",
+    #  destination: "~vagrant/playbooks/control.yml"
 
     # Run ansible provisioning
     control.vm.provision :ansible do |ansible|
@@ -132,7 +122,7 @@ config.vm.define "master" do |master|
     config.ssh.insert_key = false
     master.vm.network :private_network, ip: $IPADDR,
       virtualbox__hostonly: true
-    master.vm.network :forwarded_port, guest: 80, host: 6080,
+    master.vm.network :forwarded_port, guest: 8443, host: 8443,
       virtualbox__hostonly: true
 
     master.vm.provider :virtualbox do |vb|
@@ -171,7 +161,10 @@ config.vm.define "master" do |master|
       destination: "/home/vagrant/.ssh/id_rsa.pub"
 
     # Load /etc/hosts
-    master.vm.provision "shell", path: "./bin/hosts.sh", privileged: true
+    #master.vm.provision "shell", path: "./bin/hosts.sh", privileged: true
+    master.vm.provision "file", source: "#{VAGRANTROOT}/files/hosts",
+      destination: "/tmp/hosts"
+    master.vm.provision :shell, inline: "mv -f /tmp/hosts /etc/hosts"
 
     # Run ansible provisioning
     master.vm.provision :ansible do |ansible|
@@ -186,9 +179,6 @@ config.vm.define "master" do |master|
 
 config.vm.define "infra1" do |infra1|
 
-  #$HOSTNAME = "master"
-  #$ANSIBLEROLE = $HOSTNAME
-  #$ANSIBLEROLE = "master"
   $IPADDR = "172.99.36.6"
   $CPUS = "2"
   $MEMORY = "2048"
@@ -199,11 +189,9 @@ config.vm.define "infra1" do |infra1|
     config.ssh.insert_key = false
     infra1.vm.network :private_network, ip: $IPADDR,
       virtualbox__hostonly: true
-    #infra1.vm.network :forwarded_port, guest: 80, host: 6080,
-    #  virtualbox__hostonly: true
 
     infra1.vm.provider :virtualbox do |vb|
-      vb.name = "infra-node1"
+      vb.name = "infra1"
       vb.memory = $MEMORY
       vb.cpus = $CPUS
       if $CPUS != "1"
@@ -213,9 +201,9 @@ config.vm.define "infra1" do |infra1|
       vb.linked_clone = true if Vagrant::VERSION =~ /^1.8/
     end
 
-    infra1.vm.hostname = "infra-node1.lab.example.com"
+    infra1.vm.hostname = "infra1.lab.example.com"
     #master.vm.provision :shell, inline: "yum -y install ansible"
-    infra1.vm.provision :shell, inline: "yum -y install https://releases.ansible.com/ansible/rpm/release/epel-7-x86_64/ansible-2.6.9-1.el7.ans.noarch.rpm"
+    #infra1.vm.provision :shell, inline: "yum -y install https://releases.ansible.com/ansible/rpm/release/epel-7-x86_64/ansible-2.6.9-1.el7.ans.noarch.rpm"
     infra1.vm.provision "file",
       source: "~/.gitconfig",
       destination: ".gitconfig"
@@ -238,7 +226,10 @@ config.vm.define "infra1" do |infra1|
       destination: "/home/vagrant/.ssh/id_rsa.pub"
 
     # Load /etc/hosts
-    infra1.vm.provision "shell", path: "./bin/hosts.sh", privileged: true
+    #infra1.vm.provision "shell", path: "./bin/hosts.sh", privileged: true
+    infra1.vm.provision "file", source: "#{VAGRANTROOT}/files/hosts",
+      destination: "/tmp/hosts"
+    infra1.vm.provision :shell, inline: "mv -f /tmp/hosts /etc/hosts"
 
     # Run ansible provisioning
     infra1.vm.provision :ansible do |ansible|
@@ -263,8 +254,6 @@ config.vm.define "node1" do |node1|
     config.ssh.insert_key = false
     node1.vm.network :private_network, ip: $IPADDR,
       virtualbox__hostonly: true
-    node1.vm.network :forwarded_port, guest: 80, host: 17080,
-      virtualbox__hostonly: true
 
     node1.vm.provider :virtualbox do |vb|
       vb.name = "node1"
@@ -283,15 +272,7 @@ config.vm.define "node1" do |node1|
       source: "~/.gitconfig",
       destination: ".gitconfig"
 
-    ## Disable selinux and reboot
-    #unless FileTest.exist?("./untracked-files/first_boot_complete")
-    #  node1.vm.provision :shell, inline: "yum -y update"
-    #  node1.vm.provision :shell, inline: "sed -i s/^SELINUX=enforcing/SELINUX=permissive/ /etc/selinux/config"
-    #  node1.vm.provision :reload
-    #  #master.vm.synced_folder ".", "/vagrant"
-    #  require 'fileutils'
-    #  FileUtils.touch("#{VAGRANTROOT}/untracked-files/first_boot_complete")
-    #end
+    node1.vm.provision :shell, inline: "yum -y update"
 
     # Install git and wget
     node1.vm.provision :shell, inline: "yum -y install git wget"
@@ -309,27 +290,10 @@ config.vm.define "node1" do |node1|
       destination: "/home/vagrant/.ssh/id_rsa.pub"
 
     # Load /etc/hosts
-    node1.vm.provision "shell", path: "./bin/hosts.sh", privileged: true
-
-    # Load ansible config to ~vagrant on the guest
-    #node0.vm.provision "file",
-    #  source: "#{VAGRANTROOT}/ansible/ansible.cfg",
-    #  destination: "~vagrant/ansible.cfg"
-
-    #node1.vm.provision "file",
-    #  source: "#{VAGRANTROOT}/ansible/inventory",
-    #  destination: "~vagrant/inventory"
-
-    #node1.vm.provision "file",
-    #  source: "#{VAGRANTROOT}/ansible/requirements.yml",
-    #  destination: "~vagrant/requirements.yml"
-
-    #node1.vm.provision "shell", inline: "[[ -d ~vagrant/playbooks ]] || \
-    #  mkdir ~vagrant/playbooks/ && chown vagrant: ~vagrant/playbooks"
-
-    #node1.vm.provision "file",
-    #  source: "#{VAGRANTROOT}/ansible/playbooks/node1.yml",
-    #  destination: "~vagrant/playbooks/node1.yml"
+    #node1.vm.provision "shell", path: "./bin/hosts.sh", privileged: true
+    node1.vm.provision "file", source: "#{VAGRANTROOT}/files/hosts",
+      destination: "/tmp/hosts"
+    node1.vm.provision :shell, inline: "mv -f /tmp/hosts /etc/hosts"
 
     # Run ansible provisioning
     node1.vm.provision :ansible do |ansible|
@@ -354,8 +318,6 @@ config.vm.define "node2" do |node2|
     config.ssh.insert_key = false
     node2.vm.network :private_network, ip: $IPADDR,
       virtualbox__hostonly: true
-    node2.vm.network :forwarded_port, guest: 80, host: 18080,
-      virtualbox__hostonly: true
 
     node2.vm.provider :virtualbox do |vb|
       vb.name = "node2"
@@ -374,14 +336,7 @@ config.vm.define "node2" do |node2|
       source: "~/.gitconfig",
       destination: ".gitconfig"
 
-    ## Disable selinux and reboot
-    #unless FileTest.exist?("./untracked-files/first_boot_complete")
-    #  node2.vm.provision :shell, inline: "yum -y update"
-    #  node2.vm.provision :shell, inline: "sed -i s/^SELINUX=enforcing/SELINUX=permissive/ /etc/selinux/config"
-    #  node2.vm.provision :reload
-    #  require 'fileutils'
-    #  FileUtils.touch("#{VAGRANTROOT}/untracked-files/first_boot_complete")
-    #end
+    node2.vm.provision :shell, inline: "yum -y update"
 
     # Install git and wget
     node2.vm.provision :shell, inline: "yum -y install git wget"
@@ -399,7 +354,10 @@ config.vm.define "node2" do |node2|
       destination: "/home/vagrant/.ssh/id_rsa.pub"
 
     # Load /etc/hosts
-    node2.vm.provision "shell", path: "./bin/hosts.sh", privileged: true
+    #node2.vm.provision "shell", path: "./bin/hosts.sh", privileged: true
+    node2.vm.provision "file", source: "#{VAGRANTROOT}/files/hosts",
+      destination: "/tmp/hosts"
+    node2.vm.provision :shell, inline: "mv -f /tmp/hosts /etc/hosts"
 
     ## Load ansible config to ~vagrant on the guest
     #node2.vm.provision "file",
