@@ -28,3 +28,17 @@ To run the vagrant installer you will need Virtualbox and vagrant vagrant runnin
     openshift-ansible]$ ansible-playbook -i ../inventory playbooks/deploy_cluster.yml
 
 sudo chmod 777 /etc/ansible/facts.d/
+
+#### Notes
+
+  - When deploying on Vagrant remove default entry from /etc/hosts
+    - see openshift-ansible issue [#6986](https://github.com/openshift/openshift-ansible/issues/6986)
+  - Check the status of the service catalog
+    - `oc describe pods -n kube-service-catalog`
+  - Service catalog errot
+    - "FAILED - RETRYING: Poll for OpenShift pod deployment success  "
+  - FAILED - RETRYING: Poll for OpenShift pod deployment success
+  - redeploy certs
+    - ansible-playbook -i <inventory_file> \
+    /usr/share/ansible/openshift-ansible/playbooks/redeploy-certificates.yml
+    
