@@ -12,8 +12,8 @@
     firewall_allowed_tcp_ports:
       - "22"
         #- "53"
-      - "80"
-      - "443"
+        #- "80"
+        #- "443"
         #- "2049"
         #- "2379"
         #- "2380"
@@ -43,6 +43,7 @@
         dest: "~vagrant/openshift-ansible"
         #version: "master"
         version: "openshift-ansible-3.9.59-1"
+      become_user: vagrant  
 
   roles:
     - housekeeping
