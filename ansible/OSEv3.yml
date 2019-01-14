@@ -7,21 +7,52 @@ nodes
 etcd
 
 # Set variables common for all OSEv3 hosts
+
 [OSEv3:vars]
+# Since this is a test environment don't check ssh hostname
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 # SSH user, this user should allow ssh based auth without requiring a password
 ansible_ssh_user=vagrant
-ansible_become=true
-#ansible_ssh_user=root
-#openshift_disable_check=memory_availability,disk_availability,docker_storage,docker_image_availability
-
 # If ansible_ssh_user is not root, ansible_become must be set to true
-#ansible_become_user=vagrant
+ansible_become=true
 
+# Spoofing the networking for local deploymnet
+# openshift_ip, openshift_hostname, openshift_master_cluster_hostname 
+# need to be explicitly set or the deploy_cluster.yml playbook will fail
+# with,
+#   Unable to restart service origin-master-api: Job for origin-master-api.service failed because the control process exited with error code. See \"systemctl status origin-master-api.service\" and \"journalctl -xe\" for details.\n"
+# however, if they are set the prerequisites.yml will fail because it i
+# can't do a lookup on the addresses.
+#
+# Since we're adding ips and fqdns to the cluster via /etd/hosts we need
+# to explicitly set 
+#     openshift_ip
+#     openshift_hostname
+#     openshift_master_cluster_hostname
+# If left unset the deploy_cluster.yml playbook will fail when trying to 
+# start the openshift api server.
+# However, if they are set the prerequisites.yml will fail because it 
+# can't do a lookup on the addresses. To avoid this the checks must be disabled
+# 
+openshift_ip=172.99.36.5
+openshift_ip_check=false
+openshift_hostname=master.lab.example.com
+openshift_hostname_check=false
+openshift_master_cluster_hostname=master.lab.example.com
+openshift_master_cluster_hostname_check=false
+
+openshift_master_api_port=8443
+openshift_master_console_port=8443
 openshift_deployment_type=origin
 openshift_repos_enable_testing=true
 openshift_release=v3.9.0
-openshift_disable_check=docker_storage,memory_availability,docker_image_availability
+#openshift_disable_check=memory_availability,disk_availability,docker_storage,docker_image_availability
+openshift_disable_check=docker_storage,memory_availability,docker_image_availability,disk_availability
 #containerized=true
+openshift_enable_service_catalog=false
+#template_service_broker_install=false
+#template_service_broker_selector={"node-role.kubernetes.io/infra":"true"}
+#
 
 #openshift_master_default_subdomain=lab.example.com
 #openshift_docker_insecure_registries=172.30.0.0/16
@@ -32,7 +63,12 @@ openshift_disable_check=docker_storage,memory_availability,docker_image_availabi
 
 ## host group for masters
 [masters]
-master.lab.example.com openshift_schedulable=true containerized=false
+#master.lab.example.com openshift_schedulable=true containerized=false openshift_hostname=master.lab.example.com openshift_ip=172.99.36.5 openshift_master_cluster_hostname=master.lab.example.com
+master.lab.example.com openshift_schedulable=true containerized=false 
+
+#
+#openshift_hostname=master.lab.example.com
+#
 
 # host group for etcd
 [etcd]
@@ -45,5 +81,5 @@ node1.lab.example.com openshift_node_group_name='node-config-compute'
 node2.lab.example.com openshift_node_group_name='node-config-compute'
 infra-node1.lab.example.com openshift_node_group_name='node-config-infra'
 
-##openshift_schedulable=true
+#openshift_schedulable=true
 
