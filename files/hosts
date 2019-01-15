@@ -1,0 +1,7 @@
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+172.99.36.254 control.lab.example.com control
+172.99.36.5 master.lab.example.com master
+172.99.36.6 infra.lab.example.com infra-node1
+172.99.36.7 node1.lab.example.com node1
+172.99.36.8 node2.lab.example.com node2
