@@ -79,7 +79,7 @@ master.lab.example.com
 master.lab.example.com openshift_node_group_name='node-config-master'
 node1.lab.example.com openshift_node_group_name='node-config-compute'
 node2.lab.example.com openshift_node_group_name='node-config-compute'
-infra-node1.lab.example.com openshift_node_group_name='node-config-infra'
+infra1.lab.example.com openshift_node_group_name='node-config-infra'
 
 #openshift_schedulable=true
 
