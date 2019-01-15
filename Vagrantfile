@@ -15,24 +15,18 @@ end
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-config.vm.define "control" do |control|
+  config.vm.define "control" do |control|
 
-  IPADDR = "172.99.36.254"
-  CPUS = "1"
-  MEMORY = "1024"
-  MULTIVOL = false
-  MOUNTPOINT = "/mnt"
+    IPADDR = "172.99.36.254"
+    CPUS = "1"
+    MEMORY = "1024"
+    MULTIVOL = false
+    MOUNTPOINT = "/mnt"
 
     control.vm.box = "centos/7"
     config.ssh.insert_key = false
     control.vm.network :private_network, ip: IPADDR,
       virtualbox__hostonly: true
-    ##control.vm.network :forwarded_port, guest: 80, host: 10080,
-    #  virtualbox__hostonly: true
-    #control.vm.network :forwarded_port, guest: 443, host: 10443,
-    #  virtualbox__hostonly: true
-    #control.vm.network :forwarded_port, guest: 8052, host: 10052,
-    #  virtualbox__hostonly: true
 
     control.vm.provider :virtualbox do |vb|
       vb.name = "control"
@@ -82,20 +76,6 @@ config.vm.define "control" do |control|
       source: "#{VAGRANTROOT}/ansible/OSEv3.yml",
       destination: "~vagrant/inventory"
 
-    #control.vm.provision "file",
-    #  source: "#{VAGRANTROOT}/ansible/requirements.yml",
-    #  destination: "~vagrant/requirements.yml"
-
-    #control.vm.provision "shell", inline: "[[ -d ~vagrant/playbooks ]] || \
-    #  mkdir ~vagrant/playbooks/ && chown vagrant: ~vagrant/playbooks"
-
-    ##control.vm.provision "shell", inline: "[[ -d ~vagrant/ansible/facts ]] || \
-    ##  mkdir -m  -p ~vagrant/ansible/facts/ && chown vagrant: ~vagrant/ansible/facts"
-
-    #control.vm.provision "file",
-    #  source: "#{VAGRANTROOT}/ansible/playbooks/control.yml",
-    #  destination: "~vagrant/playbooks/control.yml"
-
     # Run ansible provisioning
     control.vm.provision :ansible do |ansible|
       ansible.verbose = "v"
@@ -107,16 +87,13 @@ config.vm.define "control" do |control|
     end
   end #!- control
 
-config.vm.define "master" do |master|
+  config.vm.define "master" do |master|
 
-  #$HOSTNAME = "master"
-  #$ANSIBLEROLE = $HOSTNAME
-  #$ANSIBLEROLE = "master"
-  $IPADDR = "172.99.36.5"
-  $CPUS = "2"
-  $MEMORY = "6144"
-  $MULTIVOL = false
-  $MOUNTPOINT = "/mnt"
+    $IPADDR = "172.99.36.5"
+    $CPUS = "2"
+    $MEMORY = "6144"
+    $MULTIVOL = false
+    $MOUNTPOINT = "/mnt"
 
     master.vm.box = "centos/7"
     config.ssh.insert_key = false
@@ -158,7 +135,7 @@ config.vm.define "master" do |master|
       destination: "/home/vagrant/.ssh/id_rsa"
     master.vm.provision :shell, inline: "chmod 600 /home/vagrant/.ssh/id_rsa"
     master.vm.provision :file, source: "#{VAGRANTROOT}/files/vagrant.pub",
-      destination: "/home/vagrant/.ssh/id_rsa.pub"
+    destination: "/home/vagrant/.ssh/id_rsa.pub"
 
     # Load /etc/hosts
     #master.vm.provision "shell", path: "./bin/hosts.sh", privileged: true
@@ -177,13 +154,13 @@ config.vm.define "master" do |master|
     end
   end #!- master
 
-config.vm.define "infra1" do |infra1|
+  config.vm.define "infra1" do |infra1|
 
-  $IPADDR = "172.99.36.6"
-  $CPUS = "2"
-  $MEMORY = "2048"
-  $MULTIVOL = false
-  $MOUNTPOINT = "/mnt"
+    $IPADDR = "172.99.36.6"
+    $CPUS = "2"
+    $MEMORY = "2048"
+    $MULTIVOL = false
+    $MOUNTPOINT = "/mnt"
 
     infra1.vm.box = "centos/7"
     config.ssh.insert_key = false
@@ -202,8 +179,6 @@ config.vm.define "infra1" do |infra1|
     end
 
     infra1.vm.hostname = "infra1.lab.example.com"
-    #master.vm.provision :shell, inline: "yum -y install ansible"
-    #infra1.vm.provision :shell, inline: "yum -y install https://releases.ansible.com/ansible/rpm/release/epel-7-x86_64/ansible-2.6.9-1.el7.ans.noarch.rpm"
     infra1.vm.provision "file",
       source: "~/.gitconfig",
       destination: ".gitconfig"
@@ -226,7 +201,6 @@ config.vm.define "infra1" do |infra1|
       destination: "/home/vagrant/.ssh/id_rsa.pub"
 
     # Load /etc/hosts
-    #infra1.vm.provision "shell", path: "./bin/hosts.sh", privileged: true
     infra1.vm.provision "file", source: "#{VAGRANTROOT}/files/hosts",
       destination: "/tmp/hosts"
     infra1.vm.provision :shell, inline: "mv -f /tmp/hosts /etc/hosts"
@@ -238,7 +212,7 @@ config.vm.define "infra1" do |infra1|
       ansible.galaxy_roles_path  = "#{VAGRANTROOT}/ansible/roles"
       ansible.galaxy_role_file = "#{VAGRANTROOT}/ansible/requirements.yml"
       ansible.galaxy_command = "ansible-galaxy install --role-file=./ansible/requirements.yml --roles-path=./ansible/roles --force"
-      ansible.playbook = "#{VAGRANTROOT}/ansible/playbooks/master.yml"
+      ansible.playbook = "#{VAGRANTROOT}/ansible/playbooks/infra1.yml"
     end
   end #!- infra1
 
@@ -290,7 +264,6 @@ config.vm.define "node1" do |node1|
       destination: "/home/vagrant/.ssh/id_rsa.pub"
 
     # Load /etc/hosts
-    #node1.vm.provision "shell", path: "./bin/hosts.sh", privileged: true
     node1.vm.provision "file", source: "#{VAGRANTROOT}/files/hosts",
       destination: "/tmp/hosts"
     node1.vm.provision :shell, inline: "mv -f /tmp/hosts /etc/hosts"
@@ -354,30 +327,9 @@ config.vm.define "node2" do |node2|
       destination: "/home/vagrant/.ssh/id_rsa.pub"
 
     # Load /etc/hosts
-    #node2.vm.provision "shell", path: "./bin/hosts.sh", privileged: true
     node2.vm.provision "file", source: "#{VAGRANTROOT}/files/hosts",
       destination: "/tmp/hosts"
     node2.vm.provision :shell, inline: "mv -f /tmp/hosts /etc/hosts"
-
-    ## Load ansible config to ~vagrant on the guest
-    #node2.vm.provision "file",
-    #  source: "#{VAGRANTROOT}/ansible/ansible.cfg",
-    #  destination: "~vagrant/ansible.cfg"
-
-    #node2.vm.provision "file",
-    #  source: "#{VAGRANTROOT}/ansible/inventory",
-    #  destination: "~vagrant/inventory"
-
-    #node2.vm.provision "file",
-    #  source: "#{VAGRANTROOT}/ansible/requirements.yml",
-    #  destination: "~vagrant/requirements.yml"
-
-    #node2.vm.provision "shell", inline: "[[ -d ~vagrant/playbooks ]] || \
-    #  mkdir ~vagrant/playbooks/ && chown vagrant: ~vagrant/playbooks"
-
-    #node2.vm.provision "file",
-    #  source: "#{VAGRANTROOT}/ansible/playbooks/node2.yml",
-    #  destination: "~vagrant/playbooks/node2.yml"
 
     # Run ansible provisioning
     node2.vm.provision :ansible do |ansible|
